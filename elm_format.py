@@ -57,7 +57,7 @@ class ElmFormatOnSave(sublime_plugin.EventListener):
 
 
 def needs_format(view):
-    settings = sublime.load_settings('elm-format-on-save.sublime-settings')
+    settings = sublime.load_settings('elm-format.sublime-settings')
     on_save = settings.get('on_save', True)
 
     if isinstance(on_save, bool):
@@ -110,7 +110,7 @@ def find_elm_format(view):
 
     #
     # 1. use absolute_path if defined in plugin settings
-    settings = sublime.load_settings('elm-format-on-save.sublime-settings')
+    settings = sublime.load_settings('elm-format.sublime-settings')
     given_path = settings.get('absolute_path')
     if given_path != None and given_path != '':
         if isinstance(given_path, str) and os.path.isabs(given_path) and os.access(given_path, os.X_OK):
