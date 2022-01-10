@@ -3,7 +3,23 @@
 Are you getting some error about `ELM-FORMAT NOT FOUND`? Is it giving some unhelpful details about your `PATH`? Here are some recommendations for that case!
 
 
-## 0. What is a `PATH` variable?
+## 0. How is the path to elm-format resolved?
+
+This version on elm-format-on-save look for elm-format locally in the current 
+project before looking for it in the `PATH` variable. This is different from the
+original [`evancz/elm-format-on-save`](https://github.com/evancz/elm-format-on-save) version.
+
+Path resolution steps:
+1. Use path in `"absolute-path"` in settings if set. (Same as `evancz/elm-format-on-save`)
+2. Look for elm-format in local node_modules. Traverses folders up from where 
+the current file to be formatted is located. Looks for 
+`node_modules/.bin/elm-format` which also should support installation through 
+[elm-tooling-cli](https://elm-tooling.github.io/elm-tooling-cli/).
+3. Look for elm-format in `node_modules/elm-format/bin/elm-format` in project 
+root to support '--no-bin-links' use cases.
+4. Look for elm-format in `PATH` variable. (Same as `evancz/elm-format-on-save`)
+
+## 1. What is a `PATH` variable?
 
 When you run `elm make src/Main.elm`, your computer starts by trying to find a file called `elm`.
 
@@ -17,7 +33,7 @@ $ echo $PATH
 So running `elm make src/Main.elm` starts by searching the `PATH` for files named `elm`. On my computer, it finds `/usr/local/bin/elm` and then can actually run the command.
 
 
-## 1. Is `elm-format` installed?
+## 2. Is `elm-format` installed?
 
 You can install `elm-format` on your computer by running this in your terminal:
 
@@ -35,7 +51,7 @@ The `/usr/local/bin` directory is a very common entry in the `PATH` list, so at 
 This plugin searches the `PATH` for `elm-format` on each run, so it should not be necessary to restart Sublime Text for things to work once it is installed.
 
 
-## 2. Try adding the `"absolute-path"`?
+## 3. Try adding the `"absolute-path"`?
 
 Go to **Preferences -> Package Settings -> Elm Format on Save -> Settings**
 
@@ -57,7 +73,7 @@ The plugin will try to use the exact file that you specify there.
 > That is what it says on my computer, but maybe it will say something else on yours.
 
 
-## 3. Uninstall `elm-format-on-save`
+## 4. Uninstall `elm-format-on-save`
 
 If none of this works, just uninstall this plugin.
 
