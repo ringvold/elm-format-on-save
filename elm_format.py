@@ -107,6 +107,9 @@ def is_excluded(on_save, path):
 
 
 def find_elm_format(view):
+
+    #
+    # 1. use absolute_path if defined in plugin settings
     settings = sublime.load_settings('elm-format-on-save.sublime-settings')
     given_path = settings.get('absolute_path')
     if given_path != None and given_path != '':
@@ -116,7 +119,23 @@ def find_elm_format(view):
         open_panel(view, bad_absolute_path)
         return None
 
-    # shutil.which('elm-format', mode=os.X_OK) # only available in Python 3.3
+    #
+    # 2. check for elm-format in node_modules relative to active view
+    active_view_parents = generate_dirs(os.path.dirname(view.file_name()), limit=500)
+    for parent in active_view_parents:
+        closest_to_view_elm_format = os.path.join(parent, 'node_modules', '.bin', 'elm-format')
+        if os.path.exists(closest_to_view_elm_format):
+            return closest_to_view_elm_format
+
+    #
+    # 3. check locally installed '--no-bin-links'
+    st_project_path = str(get_st_project_path())
+    project_elm_format_path_nbl = os.path.join(st_project_path, 'node_modules', 'elm-format', 'bin', 'elm-format')
+    if os.path.exists(project_elm_format_path_nbl):
+        return project_elm_format_path_nbl
+
+    #
+    # 4. look for elm-format on PATH
     exts = os.environ['PATHEXT'].lower().split(os.pathsep) if os.name == 'nt' else ['']
     for directory in os.environ['PATH'].split(os.pathsep):
         for ext in exts:
@@ -195,3 +214,52 @@ Is the path correct? Do you need to run "chmod +x" on the file?
 
 -----------------------------------------------------------------------
 """
+
+
+
+#### HELPERS ####
+
+
+def generate_dirs(start_dir, limit=None):
+    """
+    Generate directories, starting from start_dir.
+
+    Hat tip goes to SublimeLinter 3 and JsPrettier.
+
+    :param start_dir: The search start path.
+    :param limit: If limit is None, the search will continue up to the root directory.
+        Otherwise a maximum of limit directories will be checked.
+    """
+    right = True
+
+    while right and (limit is None or limit > 0):
+        yield start_dir
+        start_dir, right = os.path.split(start_dir)
+
+        if limit is not None:
+            limit -= 1
+
+def get_st_project_path():
+    """Get the active Sublime Text project path.
+
+    Original: https://gist.github.com/astronaughts/9678368
+
+    :rtype: object
+    :return: The active Sublime Text project path.
+    """
+    window = sublime.active_window()
+    folders = window.folders()
+    if len(folders) == 1:
+        return folders[0]
+    else:
+        active_view = window.active_view()
+        if active_view:
+            active_file_name = active_view.file_name()
+        else:
+            active_file_name = None
+        if not active_file_name:
+            return folders[0] if len(folders) else os.path.expanduser('~')
+        for folder in folders:
+            if active_file_name.startswith(folder):
+                return folder
+        return os.path.dirname(active_file_name)
