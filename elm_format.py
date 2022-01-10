@@ -36,7 +36,15 @@ class ElmFormatCommand(sublime_plugin.TextCommand):
             self.view.set_viewport_position(previous_position, False)
             self.view.window().run_command("hide_panel", {"panel": "output.elm_format"})
 
+    def is_visible(self):
+        return self.should_show_plugin()
 
+    def is_enabled(self):
+        return self.should_show_plugin()
+
+    def should_show_plugin(self):
+        scope = self.view.scope_name(0)
+        return scope.find('source.elm') != -1
 
 #### ON SAVE ####
 
