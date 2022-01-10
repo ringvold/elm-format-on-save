@@ -19,6 +19,7 @@ class ElmFormatCommand(sublime_plugin.TextCommand):
 
         region = sublime.Region(0, self.view.size())
         content = self.view.substr(region)
+        previous_position = self.view.viewport_position()
 
         stdout, stderr = subprocess.Popen(
             [elm_format, '--stdin', '--yes', '--elm-version=0.19'],
@@ -31,6 +32,8 @@ class ElmFormatCommand(sublime_plugin.TextCommand):
             open_panel(self.view, re.sub('\x1b\[\d{1,2}m', '', stderr.strip().decode()))
         else:
             self.view.replace(edit, region, stdout.decode('UTF-8'))
+            self.view.set_viewport_position((0, 0), False)
+            self.view.set_viewport_position(previous_position, False)
             self.view.window().run_command("hide_panel", {"panel": "output.elm_format"})
 
 
