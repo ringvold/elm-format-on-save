@@ -1,3 +1,5 @@
+### ***Note: Not yet published!***
+
 # elm-format plugin for Sublime Text
 
 Run `elm-format` whenever you save an Elm file.
