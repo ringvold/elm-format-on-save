@@ -4,10 +4,10 @@
 		"command": "elm_format",
 	},
 	{
-		"caption": "Preferences: Elm-format Settings",
+		"caption": "Preferences: Elm-format Runner Settings",
 		"command": "edit_settings",
 		"args": {
-			"base_file": "${packages}/elm-format-on-save/elm-format.sublime-settings",
+			"base_file": "${packages}/elm-format-runner/elm-format.sublime-settings",
 			"default": "// Settings in here override those in \"${packages}/elm-format/elm-format.sublime-settings\",\n\n{\n\t$0\n}\n"
 		}
 	},
